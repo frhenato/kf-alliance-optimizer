@@ -76,14 +76,22 @@ async function apiGet(path, apiKey, params = {}) {
     .join('&')
   
   const url = `/api/proxy?path=${encodeURIComponent(path)}${queryString ? '&' + queryString : ''}`
-  
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: { 'Api-Key': apiKey },
-  })
+
+  let response
+  try {
+    response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Api-Key': apiKey },
+    })
+  } catch (err) {
+    throw new Error('Nao foi possivel acessar /api/proxy. Rode o projeto com "npm run dev" ou publique com Functions (Vercel/Netlify/Cloudflare).')
+  }
   
   if (!response.ok) {
     const text = await response.text()
+    if (response.status === 404 && /api|not found|cannot get/i.test(text)) {
+      throw new Error('API proxy nao encontrada em /api/proxy. Rode com "npm run dev" ou configure deploy serverless para a pasta /api.')
+    }
     throw new Error(`API error: ${response.status} - ${text}`)
   }
   
