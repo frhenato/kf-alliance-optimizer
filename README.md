@@ -1,6 +1,7 @@
 # Alliance Deck Optimizer - Serverless
 
 Otimizador de Alliance Decks para Decks of KeyForge com arquitetura serverless.
+
 (Visite decksofkeyforge.com.br e considere se tornar um Patreon).
 
 ## Arquitetura
