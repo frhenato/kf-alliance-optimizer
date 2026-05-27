@@ -1,0 +1,18 @@
+{
+  "name": "dok-alliance-optimizer-serverless",
+  "version": "1.0.0",
+  "description": "Alliance Deck Optimizer for Decks of KeyForge - Serverless Architecture",
+  "main": "api/proxy.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "keyforge",
+    "alliance",
+    "optimizer",
+    "decks-of-keyforge"
+  ],
+  "author": "",
+  "license": "MIT"
+}
