@@ -1103,16 +1103,16 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
     return traits.some(t => t.trait === 'forgesKeys' || t.trait === 'forgesKeysWithoutAember')
   }).length
 
-  // Scaling Amber Control count
+  // Scaling Amber Control count (rating > 1 to match DoK UI)
   const scalingAmberControl = cards.filter(c => {
     const traits = c.extraCardInfo?.traits || []
-    return traits.some(t => t.trait === 'scalingAmberControl')
+    return traits.some(t => t.trait === 'scalingAmberControl' && (t.rating || 0) > 1)
   }).length
 
-  // Board Wipe count (boardClear trait)
+  // Board Wipe count (boardClear trait, rating > 1 to match DoK UI)
   const boardWipeCount = cards.filter(c => {
     const traits = c.extraCardInfo?.traits || []
-    return traits.some(t => t.trait === 'boardClear')
+    return traits.some(t => t.trait === 'boardClear' && (t.rating || 0) > 1)
   }).length
 
   return {
