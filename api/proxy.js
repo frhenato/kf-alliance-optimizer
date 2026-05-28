@@ -74,9 +74,10 @@ function fetchFromDoK(url, apiKey) {
     }
 
     const req = https.request(opts, (res) => {
-      let raw = ''
-      res.on('data', chunk => raw += chunk)
+      const chunks = []
+      res.on('data', chunk => chunks.push(chunk))
       res.on('end', () => {
+        const raw = Buffer.concat(chunks).toString('utf8')
         if (res.statusCode === 401 || res.statusCode === 403) {
           const err = new Error('API key rejected')
           err.status = res.statusCode
