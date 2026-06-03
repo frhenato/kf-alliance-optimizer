@@ -16,6 +16,7 @@
  *   • Tokens: injected when tokenCard is passed to calculateSAS (uses computeTokensPerGame)
  *   • Prophecy cards: treated as normal cards (their special combo is skipped)
  *   • House-enhancement combos (bonus-house pips): included via SelfEnhancement
+ * 
  */
 
 'use strict'
@@ -25,12 +26,12 @@
 const CREATURE_BONUS = 0.4
 
 const PIP_AERC = {
-  amber:   1.00,
+  amber: 1.00,
   capture: 0.33,
-  damage:  0.25,
-  draw:    0.75,
+  damage: 0.25,
+  draw: 0.75,
   discard: 0.50,
-  power:   0.10,
+  power: 0.10,
 }
 
 // TraitStrength enum values (SynergyTrait.kt)
@@ -39,21 +40,21 @@ const TS = { EXTRA_STRONG: 6, STRONG: 4, NORMAL: 3, WEAK: 2, EXTRA_WEAK: 1 }
 // ─── Deck-stat trait configuration (DeckSynergyStats.kt) ─────────────────────
 //  { maxDeck, maxHouse [, minDeck=0, minHouse=0] }
 const DECK_STAT_TRAITS = {
-  creatureCount:           { maxDeck: 25, maxHouse: 10, minDeck: 11, minHouse: 3  },
-  tokenCount:              { maxDeck: 25, maxHouse: 25 },
-  bonusAmber:              { maxDeck: 30, maxHouse: 10 },
-  bonusCapture:            { maxDeck: 30, maxHouse: 10 },
-  bonusDamage:             { maxDeck: 30, maxHouse: 10 },
-  bonusDraw:               { maxDeck: 30, maxHouse: 10 },
-  bonusDiscard:            { maxDeck: 30, maxHouse: 10 },
-  bonusPower:              { maxDeck: 30, maxHouse: 10 },
-  totalCreaturePower:      { maxDeck: 100, maxHouse: 30, minDeck: 30, minHouse: 15 },
-  totalArmor:              { maxDeck: 10,  maxHouse:  5 },
-  haunted:                 { maxDeck: 100, maxHouse:  0 },
-  propheticOdds:           { maxDeck: 100, maxHouse:  0 },
-  expectedAember:          { maxDeck: 30,  maxHouse: 12, minDeck: 10, minHouse: 3 },
-  capturedAmber:           { maxDeck: 16,  maxHouse:  8 },
-  targettedCapturedAmber:  { maxDeck: 16,  maxHouse:  8 },
+  creatureCount: { maxDeck: 25, maxHouse: 10, minDeck: 11, minHouse: 3 },
+  tokenCount: { maxDeck: 25, maxHouse: 25 },
+  bonusAmber: { maxDeck: 30, maxHouse: 10 },
+  bonusCapture: { maxDeck: 30, maxHouse: 10 },
+  bonusDamage: { maxDeck: 30, maxHouse: 10 },
+  bonusDraw: { maxDeck: 30, maxHouse: 10 },
+  bonusDiscard: { maxDeck: 30, maxHouse: 10 },
+  bonusPower: { maxDeck: 30, maxHouse: 10 },
+  totalCreaturePower: { maxDeck: 100, maxHouse: 30, minDeck: 30, minHouse: 15 },
+  totalArmor: { maxDeck: 10, maxHouse: 5 },
+  haunted: { maxDeck: 100, maxHouse: 0 },
+  propheticOdds: { maxDeck: 100, maxHouse: 0 },
+  expectedAember: { maxDeck: 30, maxHouse: 12, minDeck: 10, minHouse: 3 },
+  capturedAmber: { maxDeck: 16, maxHouse: 8 },
+  targettedCapturedAmber: { maxDeck: 16, maxHouse: 8 },
 }
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -103,9 +104,9 @@ function allHouses(card) {
 
 /** pip-enhanced: any non-zero pip icon on the card */
 function isPipEnhanced(card) {
-  return (card.bonusAember  || 0) > 0 || (card.bonusCapture  || 0) > 0 ||
-         (card.bonusDamage  || 0) > 0 || (card.bonusDraw     || 0) > 0 ||
-         (card.bonusDiscard || 0) > 0 || (card.bonusPower     || 0) > 0
+  return (card.bonusAember || 0) > 0 || (card.bonusCapture || 0) > 0 ||
+    (card.bonusDamage || 0) > 0 || (card.bonusDraw || 0) > 0 ||
+    (card.bonusDiscard || 0) > 0 || (card.bonusPower || 0) > 0
 }
 
 /** enhanced: pip-enhanced OR has bonus-house pips */
@@ -128,23 +129,23 @@ function aercAverage(card) {
     return i.aercScoreAverage
   }
   // Fallback to manual calculation (should rarely happen)
-  const ep  = realEP(card)
-  const cb  = creatureBonusFor(card.cardType)
-  const base = (i.amberControl     || 0) + (i.expectedAmber    || 0) +
-               (i.artifactControl  || 0) + (i.creatureControl  || 0) +
-               (i.efficiency       || 0) + (i.recursion        || 0) +
-               (i.disruption       || 0) + (i.creatureProtection || 0) +
-               (i.other            || 0) + ep / 10 + cb
-  const maxV = ((i.amberControlMax       ?? i.amberControl      ) || 0) +
-               ((i.expectedAmberMax      ?? i.expectedAmber     ) || 0) +
-               ((i.artifactControlMax    ?? i.artifactControl   ) || 0) +
-               ((i.creatureControlMax    ?? i.creatureControl   ) || 0) +
-               ((i.efficiencyMax         ?? i.efficiency        ) || 0) +
-               ((i.recursionMax          ?? i.recursion         ) || 0) +
-               ((i.disruptionMax         ?? i.disruption        ) || 0) +
-               ((i.creatureProtectionMax ?? i.creatureProtection) || 0) +
-               ((i.otherMax              ?? i.other             ) || 0) +
-               ((i.effectivePowerMax     ?? ep                  ) || 0) / 10 + cb
+  const ep = realEP(card)
+  const cb = creatureBonusFor(card.cardType)
+  const base = (i.amberControl || 0) + (i.expectedAmber || 0) +
+    (i.artifactControl || 0) + (i.creatureControl || 0) +
+    (i.efficiency || 0) + (i.recursion || 0) +
+    (i.disruption || 0) + (i.creatureProtection || 0) +
+    (i.other || 0) + ep / 10 + cb
+  const maxV = ((i.amberControlMax ?? i.amberControl) || 0) +
+    ((i.expectedAmberMax ?? i.expectedAmber) || 0) +
+    ((i.artifactControlMax ?? i.artifactControl) || 0) +
+    ((i.creatureControlMax ?? i.creatureControl) || 0) +
+    ((i.efficiencyMax ?? i.efficiency) || 0) +
+    ((i.recursionMax ?? i.recursion) || 0) +
+    ((i.disruptionMax ?? i.disruption) || 0) +
+    ((i.creatureProtectionMax ?? i.creatureProtection) || 0) +
+    ((i.otherMax ?? i.other) || 0) +
+    ((i.effectivePowerMax ?? ep) || 0) / 10 + cb
   return maxV === base ? base : (base + maxV) / 2
 }
 
@@ -160,9 +161,9 @@ function powerMatch(powersString, power, cardType) {
   if (!ps) return true
   if (cardType !== 'Creature' && cardType !== 'TokenCreature') return false
   if (ps === 'even') return power % 2 === 0
-  if (ps === 'odd')  return power % 2 !== 0
+  if (ps === 'odd') return power % 2 !== 0
   if (ps.includes(' or less')) return power <= (parseInt(ps) || 0)
-  if (ps.endsWith('+'))        return power >= (parseInt(ps) || 0)
+  if (ps.endsWith('+')) return power >= (parseInt(ps) || 0)
   if (ps.includes('-')) {
     const [a, b] = ps.split('-').map(Number)
     if (!isNaN(a) && !isNaN(b)) return power >= a && power <= b
@@ -178,8 +179,8 @@ function powerMatch(powersString, power, cardType) {
  * Converts (synergy rating, trait strength value) → synergy percentage.
  */
 function ratingsToPercent(synRating, strengthValue) {
-  const table = { 2:2, 3:5, 4:10, 5:15, 6:25, 7:33, 8:50, 9:75, 10:100, 11:100, 12:100 }
-  const sum  = Math.abs(synRating) + strengthValue
+  const table = { 2: 2, 3: 5, 4: 10, 5: 15, 6: 25, 7: 33, 8: 50, 9: 75, 10: 100, 11: 100, 12: 100 }
+  const sum = Math.abs(synRating) + strengthValue
   const sign = synRating < 0 ? -1 : 1
   return sign * (table[sum] || 0)
 }
@@ -193,9 +194,9 @@ function ratingsToPercent(synRating, strengthValue) {
 function synergizedValue(totalSynPercent, min, max, hasPositive, hasNegative, baseSynPercent) {
   if (isZeroOrNull(max)) return { value: min, synergy: 0 }
 
-  const range     = max - min
-  const divideBy  = (hasPositive && hasNegative && baseSynPercent == null) ? 200 : 100
-  const synValue  = (totalSynPercent * range) / divideBy
+  const range = max - min
+  const divideBy = (hasPositive && hasNegative && baseSynPercent == null) ? 200 : 100
+  const synValue = (totalSynPercent * range) / divideBy
 
   let start
   if (baseSynPercent != null) {
@@ -208,7 +209,7 @@ function synergizedValue(totalSynPercent, min, max, hasPositive, hasNegative, ba
     start = max
   }
 
-  const value      = clamp(synValue + start, min, max)
+  const value = clamp(synValue + start, min, max)
   const cappedStart = clamp(start, min, max)
   return { value, synergy: value - cappedStart }
 }
@@ -226,7 +227,7 @@ function computeStats(cards, expansion) {
 
   const buildStats = (cardSet, player) => {
     const isCreature = c => c.cardType === 'Creature' || c.cardType === 'TokenCreature' ||
-                            (c.extraCardInfo.extraCardTypes || []).includes('Creature')
+      (c.extraCardInfo.extraCardTypes || []).includes('Creature')
 
     const creatures = cardSet.filter(isCreature)
 
@@ -234,7 +235,7 @@ function computeStats(cards, expansion) {
     let totalCP = 0
     for (const c of cardSet) {
       const t = (c.extraCardInfo.traits || []).find(t => t.trait === 'increasesCreaturePower' && t.player !== 'ENEMY')
-      const bonus = t ? ({ 6:6, 4:4, 3:3, 2:2, 1:1 }[Math.abs(t.rating || 3)] || 0) : 0
+      const bonus = t ? ({ 6: 6, 4: 4, 3: 3, 2: 2, 1: 1 }[Math.abs(t.rating || 3)] || 0) : 0
       const p = (c.power || 0) + (c.bonusPower || 0) + bonus
       if (p > 0) totalCP += p
     }
@@ -248,27 +249,27 @@ function computeStats(cards, expansion) {
     }
 
     return {
-      creatureCount:          creatures.length,
-      bonusAmber:             cardSet.reduce((s, c) => s + (c.bonusAember || 0) + (c.amber || 0), 0),
-      bonusCapture:           cardSet.reduce((s, c) => s + (c.bonusCapture || 0), 0),
-      bonusDamage:            cardSet.reduce((s, c) => s + (c.bonusDamage  || 0), 0),
-      bonusDraw:              cardSet.reduce((s, c) => s + (c.bonusDraw    || 0), 0),
-      bonusDiscard:           cardSet.reduce((s, c) => s + (c.bonusDiscard || 0), 0),
-      bonusPower:             cardSet.reduce((s, c) => s + (c.bonusPower   || 0), 0),
-      totalCreaturePower:     totalCP,
-      totalArmor:             cardSet.reduce((s, c) => s + (c.armor        || 0), 0),
-      expectedAember:         Math.round(totalEA),
-      capturedAmber:          computeCapture(cardSet, new Set(['capturesAmber', 'exalt']), player),
-      targettedCapturedAmber: computeCapture(cardSet, new Set(['putsAmberOnTarget']),      player),
-      haunted:                isGR ? computeHaunting(cardSet, player) : 0,
-      propheticOdds:          isPV ? computeProphecy(cardSet)          : 0,
-      tokenCount:             cardSet.filter(c => c.cardType === 'TokenCreature').length,
+      creatureCount: creatures.length,
+      bonusAmber: cardSet.reduce((s, c) => s + (c.bonusAember || 0) + (c.amber || 0), 0),
+      bonusCapture: cardSet.reduce((s, c) => s + (c.bonusCapture || 0), 0),
+      bonusDamage: cardSet.reduce((s, c) => s + (c.bonusDamage || 0), 0),
+      bonusDraw: cardSet.reduce((s, c) => s + (c.bonusDraw || 0), 0),
+      bonusDiscard: cardSet.reduce((s, c) => s + (c.bonusDiscard || 0), 0),
+      bonusPower: cardSet.reduce((s, c) => s + (c.bonusPower || 0), 0),
+      totalCreaturePower: totalCP,
+      totalArmor: cardSet.reduce((s, c) => s + (c.armor || 0), 0),
+      expectedAember: Math.round(totalEA),
+      capturedAmber: computeCapture(cardSet, new Set(['capturesAmber', 'exalt']), player),
+      targettedCapturedAmber: computeCapture(cardSet, new Set(['putsAmberOnTarget']), player),
+      haunted: isGR ? computeHaunting(cardSet, player) : 0,
+      propheticOdds: isPV ? computeProphecy(cardSet) : 0,
+      tokenCount: cardSet.filter(c => c.cardType === 'TokenCreature').length,
     }
   }
 
-  const deckStats       = buildStats(cards, 'ANY')
-  const deckStatsEnemy  = buildStats(cards, 'ENEMY')
-  const houseStats      = Object.fromEntries(houses.map(h => [h, buildStats(cards.filter(c => c.house === h), 'ANY')]))
+  const deckStats = buildStats(cards, 'ANY')
+  const deckStatsEnemy = buildStats(cards, 'ENEMY')
+  const houseStats = Object.fromEntries(houses.map(h => [h, buildStats(cards.filter(c => c.house === h), 'ANY')]))
   const houseStatsFriendly = Object.fromEntries(houses.map(h => [h, buildStats(cards.filter(c => c.house === h), 'FRIENDLY')]))
   const houseStatsEnemy = Object.fromEntries(houses.map(h => [h, buildStats(cards.filter(c => c.house === h), 'ENEMY')]))
   const deckStatsFriendly = buildStats(cards, 'FRIENDLY')
@@ -313,7 +314,7 @@ function computeHaunting(cards, player) {
     }
     if (friendly) {
       v += card.cardType === 'Artifact' ? -2 : 0
-      v += card.cardType === 'Action'   ?  2 : 0
+      v += card.cardType === 'Action' ? 2 : 0
       v += (card.bonusDiscard || 0) * 4
     }
     total += v
@@ -354,10 +355,10 @@ function deckStatSynPercent(synTrait, house, bundle) {
 
   const { deckStats, deckStatsFriendly, deckStatsEnemy, houseStats, houseStatsFriendly, houseStatsEnemy } = bundle
 
-  const player    = synTrait.player || 'ANY'
-  const traitHouse = synTrait.house  || 'anyHouse'
+  const player = synTrait.player || 'ANY'
+  const traitHouse = synTrait.house || 'anyHouse'
 
-  const relDeck  = player === 'ENEMY' ? deckStatsEnemy : player === 'FRIENDLY' ? deckStatsFriendly : deckStats
+  const relDeck = player === 'ENEMY' ? deckStatsEnemy : player === 'FRIENDLY' ? deckStatsFriendly : deckStats
   const relHouse = player === 'ENEMY' ? houseStatsEnemy : player === 'FRIENDLY' ? houseStatsFriendly : houseStats
 
   function pct(actual, min, max) {
@@ -404,7 +405,7 @@ function buildTraitsMap(cards) {
   }
 
   for (const card of cards) {
-    const info      = card.extraCardInfo
+    const info = card.extraCardInfo
     const cardHouses = allHouses(card)
 
     // Traits declared in extraCardInfo
@@ -426,50 +427,60 @@ function buildTraitsMap(cards) {
     for (const gameTrait of (card.traits || [])) {
       const traitName = gameTrait.toLowerCase()
       // Only add if it's a known SynergyTrait string (guard against "Knight", etc.)
-      addTrait({ trait: traitName, rating: 3, house: 'anyHouse', player: 'ANY',
-                 cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false },
-               card, cardHouses)
+      addTrait({
+        trait: traitName, rating: 3, house: 'anyHouse', player: 'ANY',
+        cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false
+      },
+        card, cardHouses)
     }
 
     // If the card is enhanced, add the 'enhanced' trait
     if (isEnhanced(card)) {
-      addTrait({ trait: 'enhanced', rating: 3, house: 'anyHouse', player: 'ANY',
-                 cardTypes: (info.extraCardTypes || []), cardTraits: [], fromZones: [],
-                 powersString: '', notCardTraits: false },
-               card, cardHouses)
+      addTrait({
+        trait: 'enhanced', rating: 3, house: 'anyHouse', player: 'ANY',
+        cardTypes: (info.extraCardTypes || []), cardTraits: [], fromZones: [],
+        powersString: '', notCardTraits: false
+      },
+        card, cardHouses)
     }
 
     // Every card adds the 'any' trait
-    addTrait({ trait: 'any', rating: 3, house: 'anyHouse', player: 'ANY',
-               cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false },
-             card, cardHouses)
+    addTrait({
+      trait: 'any', rating: 3, house: 'anyHouse', player: 'ANY',
+      cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false
+    },
+      card, cardHouses)
   }
 
   // ── AutomaticTraitsAlgorithm: highValue ──────────────────────────────────
   for (const card of cards) {
     const avg = aercAverage(card)
     if (avg < 2.5) continue
-    const rating   = avg >= 3.5 ? 4 : avg >= 3.0 ? 3 : 2
+    const rating = avg >= 3.5 ? 4 : avg >= 3.0 ? 3 : 2
     const allTypes = [...new Set([card.cardType, ...(card.extraCardInfo.extraCardTypes || [])])]
-    addTrait({ trait: 'highValue', rating, house: 'anyHouse', player: 'ANY',
-               cardTypes: allTypes, cardTraits: [], fromZones: [], powersString: '', notCardTraits: false },
-             card, allHouses(card))
+    addTrait({
+      trait: 'highValue', rating, house: 'anyHouse', player: 'ANY',
+      cardTypes: allTypes, cardTraits: [], fromZones: [], powersString: '', notCardTraits: false
+    },
+      card, allHouses(card))
   }
 
   // ── GenerateDeckAndHouseTraits: bonus-pip deck traits ─────────────────────
   const pipTotals = {
-    bonusAmber:   cards.reduce((s, c) => s + (c.bonusAember || 0) + (c.amber || 0), 0),
+    bonusAmber: cards.reduce((s, c) => s + (c.bonusAember || 0) + (c.amber || 0), 0),
     bonusCapture: cards.reduce((s, c) => s + (c.bonusCapture || 0), 0),
-    bonusDraw:    cards.reduce((s, c) => s + (c.bonusDraw    || 0), 0),
+    bonusDraw: cards.reduce((s, c) => s + (c.bonusDraw || 0), 0),
     bonusDiscard: cards.reduce((s, c) => s + (c.bonusDiscard || 0), 0),
-    bonusDamage:  cards.reduce((s, c) => s + (c.bonusDamage  || 0), 0),
-    bonusPower:   cards.reduce((s, c) => s + (c.bonusPower   || 0), 0),
+    bonusDamage: cards.reduce((s, c) => s + (c.bonusDamage || 0), 0),
+    bonusPower: cards.reduce((s, c) => s + (c.bonusPower || 0), 0),
   }
   for (const [trait, count] of Object.entries(pipTotals)) {
     for (let i = 0; i < count; i++) {
-      addTrait({ trait, rating: TS.EXTRA_WEAK, house: 'anyHouse', player: 'ANY',
-                 cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false },
-               null, null, true)
+      addTrait({
+        trait, rating: TS.EXTRA_WEAK, house: 'anyHouse', player: 'ANY',
+        cardTypes: [], cardTraits: [], fromZones: [], powersString: '', notCardTraits: false
+      },
+        null, null, true)
     }
   }
 
@@ -488,14 +499,14 @@ function matchTraits(synCard, synergy, traitsMap) {
   if (!entries || entries.length === 0) return { matches: {}, cardNames: [] }
 
   const synCardHouses = allHouses(synCard)
-  const synTypes      = synergy.cardTypes  || []
-  const synFromZones  = synergy.fromZones  || []
+  const synTypes = synergy.cardTypes || []
+  const synFromZones = synergy.fromZones || []
   const synCardTraits = synergy.cardTraits || []
-  const synPowers     = synergy.powersString || ''
+  const synPowers = synergy.powersString || ''
 
-  const matched    = []
-  let   sameCard   = false
-  const cardNames  = []
+  const matched = []
+  let sameCard = false
+  const cardNames = []
 
   for (const entry of entries) {
     const { value: tv, card: tc, deckTrait } = entry
@@ -566,36 +577,36 @@ function matchTraits(synCard, synergy, traitsMap) {
  */
 function housesMatch(synergy, synCardHouses, tv, traitCardHouses, deckTrait) {
   const sh = synergy.house || 'anyHouse'
-  const th = tv.house      || 'anyHouse'
+  const th = tv.house || 'anyHouse'
   const overlap = traitCardHouses == null ? true
-                : [...synCardHouses].some(h => traitCardHouses.has(h))
+    : [...synCardHouses].some(h => traitCardHouses.has(h))
 
   switch (sh) {
     case 'anyHouse':
       switch (th) {
-        case 'anyHouse':    return true
-        case 'house':       return !deckTrait && overlap
-        case 'outOfHouse':  return !deckTrait && !overlap
-        case 'continuous':  return true
+        case 'anyHouse': return true
+        case 'house': return !deckTrait && overlap
+        case 'outOfHouse': return !deckTrait && !overlap
+        case 'continuous': return true
       }
       break
     case 'house':
       switch (th) {
-        case 'anyHouse':    return !deckTrait && overlap
-        case 'house':       return overlap
-        case 'outOfHouse':  return false
-        case 'continuous':  return true
+        case 'anyHouse': return !deckTrait && overlap
+        case 'house': return overlap
+        case 'outOfHouse': return false
+        case 'continuous': return true
       }
       break
     case 'outOfHouse':
       switch (th) {
-        case 'anyHouse':    return !deckTrait && !overlap
-        case 'house':       return false
-        case 'outOfHouse':  return !overlap
-        case 'continuous':  return true
+        case 'anyHouse': return !deckTrait && !overlap
+        case 'house': return false
+        case 'outOfHouse': return !overlap
+        case 'continuous': return true
       }
       break
-    case 'continuous':  return true
+    case 'continuous': return true
   }
   return true
 }
@@ -632,7 +643,7 @@ function cardSpecificMatches(synCard, synergy, cardsMap) {
 
   if (hits.length === 0) return null
 
-  const type  = hits[0].cardType
+  const type = hits[0].cardType
   const isToken = type === 'TokenCreature'
   const count = isToken ? 2 : hits.reduce((s, h) => s + h.quantity, 0)
   const strength = isToken ? TS.STRONG : TS.NORMAL
@@ -661,10 +672,10 @@ function generateSelfEnhancementCombos(cards) {
   for (const { card, copies } of Object.values(groups)) {
     if (!isPipEnhanced(card)) continue
 
-    const traits  = card.extraCardInfo.traits || []
+    const traits = card.extraCardInfo.traits || []
     const replays = traits.find(t => t.trait === 'replaysSelf')
-    const danger  = traits.find(t => t.trait === 'dangerousRandomPlay')
-    const scrap   = traits.find(t => t.trait === 'scrapValue' || t.trait === 'fate')
+    const danger = traits.find(t => t.trait === 'dangerousRandomPlay')
+    const scrap = traits.find(t => t.trait === 'scrapValue' || t.trait === 'fate')
 
     let mult
     if (replays) {
@@ -683,13 +694,13 @@ function generateSelfEnhancementCombos(cards) {
 
     // Calculate modifier: (base * mult) - base = base * (mult - 1)
     // This gives the BONUS value, not the total (matches Kotlin calculateModifier)
-    const drawMod    = (card.bonusDraw    || 0) * PIP_AERC.draw    * (mult - 1)
+    const drawMod = (card.bonusDraw || 0) * PIP_AERC.draw * (mult - 1)
     const discardMod = (card.bonusDiscard || 0) * PIP_AERC.discard * (mult - 1)
-    const powerMod   = (card.bonusPower   || 0) * PIP_AERC.power   * (mult - 1)
-    const amberMod   = (card.bonusAember  || 0) * PIP_AERC.amber   * (mult - 1)
+    const powerMod = (card.bonusPower || 0) * PIP_AERC.power * (mult - 1)
+    const amberMod = (card.bonusAember || 0) * PIP_AERC.amber * (mult - 1)
     const captureMod = (card.bonusCapture || 0) * PIP_AERC.capture * (mult - 1)
-    const damageMod  = (card.bonusDamage  || 0) * PIP_AERC.damage  * (mult - 1)
-    const total      = drawMod + amberMod + captureMod + damageMod + discardMod + powerMod
+    const damageMod = (card.bonusDamage || 0) * PIP_AERC.damage * (mult - 1)
+    const total = drawMod + amberMod + captureMod + damageMod + discardMod + powerMod
 
     combos.push({
       house: card.house, cardName: card.cardTitle + ' Enhanced',
@@ -781,7 +792,7 @@ function calculateEfficiencyBonus(combos, preSas) {
   return combos
     .filter(c => c.efficiency > 0)
     .reduce((sum, combo) => {
-      const f     = combo.efficiency
+      const f = combo.efficiency
       const bonus = (f * (((preSas - combo.aercScore) / 35) * 0.4) / PIP_AERC.draw) - f
       return sum + bonus * (combo.copies || 1)
     }, 0)
@@ -848,7 +859,7 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
 
   // ── 2. Build helpers ─────────────────────────────────────────────────────
   const statsBundle = computeStats(cards, expansion)
-  const traitsMap   = buildTraitsMap(cards)
+  const traitsMap = buildTraitsMap(cards)
 
   // cardsMap[house][cardTitle] = { quantity, cardType }  — for card-specific syns
   const cardsMap = {}
@@ -877,9 +888,9 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
   const synergyCombos = []
 
   for (const { card, copies } of Object.values(uniqueGroups)) {
-    const info    = card.extraCardInfo
-    const house   = card.house
-    const syns    = info.synergies || []
+    const info = card.extraCardInfo
+    const house = card.house
+    const syns = info.synergies || []
 
     if (card.cardType === 'Prophecy') continue   // Prophecy special-case skipped
 
@@ -902,7 +913,7 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
         const res = cardSpecificMatches(card, synergy, cardsMap)
         pct = res
           ? Object.entries(res.matches).reduce((s, [sv, cnt]) =>
-              s + cnt * ratingsToPercent(synergy.rating, Number(sv)), 0)
+            s + cnt * ratingsToPercent(synergy.rating, Number(sv)), 0)
           : 0
       }
       // Priority 4: trait matching
@@ -930,23 +941,23 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
 
     for (const groupItems of Object.values(grouped)) {
       const isPrimary = groupItems.some(x => x.synergy.primaryGroup)
-      const maxEntry  = groupItems.find(x => x.synergy.synergyGroupMax != null && x.synergy.synergyGroupMax !== 0)
-      const groupMax  = maxEntry?.synergy.synergyGroupMax ?? null
-      
+      const maxEntry = groupItems.find(x => x.synergy.synergyGroupMax != null && x.synergy.synergyGroupMax !== 0)
+      const groupMax = maxEntry?.synergy.synergyGroupMax ?? null
+
       // Filter out 'highValue' synergies if 'any' exists in the same group
       // This prevents double-counting cards that match both 'any' and 'highValue'
       const hasAnyTrait = groupItems.some(x => x.synergy.trait === 'any')
-      const filteredItems = hasAnyTrait 
+      const filteredItems = hasAnyTrait
         ? groupItems.filter(x => x.synergy.trait !== 'highValue')
         : groupItems
-      
-      const groupSum  = filteredItems.reduce((s, x) => s + x.pct, 0)
+
+      const groupSum = filteredItems.reduce((s, x) => s + x.pct, 0)
 
       if (isPrimary) generalGroupMax = groupSum
 
       let capped = groupSum
       if (groupMax != null &&
-          ((groupMax > 0 && groupSum > groupMax) || (groupMax < 0 && groupSum < groupMax))) {
+        ((groupMax > 0 && groupSum > groupMax) || (groupMax < 0 && groupSum < groupMax))) {
         capped = groupMax
       }
       groupPercents.push(capped)
@@ -956,53 +967,53 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
       ? groupPercents
       : groupPercents.map(g => g > generalGroupMax ? generalGroupMax : g)
 
-    const totalSynPct  = finalPercents.reduce((s, g) => s + g, 0)
-    const hasPositive  = syns.some(s => s.rating > 0)
-    const hasNegative  = syns.some(s => s.rating < 0)
-    const base         = info.baseSynPercent ?? null
+    const totalSynPct = finalPercents.reduce((s, g) => s + g, 0)
+    const hasPositive = syns.some(s => s.rating > 0)
+    const hasNegative = syns.some(s => s.rating < 0)
+    const base = info.baseSynPercent ?? null
 
     // ── 3c. Compute synergized AERC values ────────────────────────────────
     const sv = (min, max) => synergizedValue(totalSynPct, min, max ?? null, hasPositive, hasNegative, base)
 
-    const ep      = realEP(card)
-    const aValue  = sv(info.amberControl      || 0, info.amberControlMax      ?? null)
-    const eValue  = sv(info.expectedAmber     || 0, info.expectedAmberMax     ?? null)
-    const rValue  = sv(info.artifactControl   || 0, info.artifactControlMax   ?? null)
-    const cValue  = sv(info.creatureControl   || 0, info.creatureControlMax   ?? null)
-    const fValue  = sv(info.efficiency        || 0, info.efficiencyMax        ?? null)
-    const uValue  = sv(info.recursion         || 0, info.recursionMax         ?? null)
+    const ep = realEP(card)
+    const aValue = sv(info.amberControl || 0, info.amberControlMax ?? null)
+    const eValue = sv(info.expectedAmber || 0, info.expectedAmberMax ?? null)
+    const rValue = sv(info.artifactControl || 0, info.artifactControlMax ?? null)
+    const cValue = sv(info.creatureControl || 0, info.creatureControlMax ?? null)
+    const fValue = sv(info.efficiency || 0, info.efficiencyMax ?? null)
+    const uValue = sv(info.recursion || 0, info.recursionMax ?? null)
 
-    const dValue  = sv(info.disruption        || 0, info.disruptionMax        ?? null)
-    const apValue = sv(info.creatureProtection|| 0, info.creatureProtectionMax?? null)
-    const oValue  = sv(info.other             || 0, info.otherMax             ?? null)
-    const pValue  = (ep === 0 && isZeroOrNull(info.effectivePowerMax))
+    const dValue = sv(info.disruption || 0, info.disruptionMax ?? null)
+    const apValue = sv(info.creatureProtection || 0, info.creatureProtectionMax ?? null)
+    const oValue = sv(info.other || 0, info.otherMax ?? null)
+    const pValue = (ep === 0 && isZeroOrNull(info.effectivePowerMax))
       ? { value: 0, synergy: 0 }
       : sv(ep, info.effectivePowerMax ?? null)
 
     // effectivePower is stored × 10 in the model; scale for SAS
     const pScaled = {
-      value:   Math.round(pValue.value   / 10 * 10) / 10,
+      value: Math.round(pValue.value / 10 * 10) / 10,
       synergy: Math.round(pValue.synergy / 10 * 10) / 10,
     }
 
-    const allSV   = [aValue, eValue, rValue, cValue, fValue, uValue, pScaled, dValue, apValue, oValue]
-    const netSyn  = allSV.reduce((s, v) => s + v.synergy, 0)
-    const aerc    = allSV.reduce((s, v) => s + v.value,   0) + creatureBonusFor(card.cardType)
+    const allSV = [aValue, eValue, rValue, cValue, fValue, uValue, pScaled, dValue, apValue, oValue]
+    const netSyn = allSV.reduce((s, v) => s + v.synergy, 0)
+    const aerc = allSV.reduce((s, v) => s + v.value, 0) + creatureBonusFor(card.cardType)
 
     synergyCombos.push({
       house, cardName: card.cardTitle,
       netSynergy: netSyn,
-      aercScore:  aerc,
-      expectedAmber:      eValue.value,
-      amberControl:       aValue.value,
-      creatureControl:    cValue.value,
-      artifactControl:    rValue.value,
-      efficiency:         fValue.value,
-      recursion:          uValue.value,
-      effectivePower:     Math.trunc(pValue.value),  // Kotlin uses .toInt() which truncates
+      aercScore: aerc,
+      expectedAmber: eValue.value,
+      amberControl: aValue.value,
+      creatureControl: cValue.value,
+      artifactControl: rValue.value,
+      efficiency: fValue.value,
+      recursion: uValue.value,
+      effectivePower: Math.trunc(pValue.value),  // Kotlin uses .toInt() which truncates
       creatureProtection: apValue.value,
-      disruption:         dValue.value,
-      other:              oValue.value,
+      disruption: dValue.value,
+      other: oValue.value,
       copies,
     })
   }
@@ -1014,32 +1025,32 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
   // ── 5. Sum totals across all combos ─────────────────────────────────────
   const sum = key => synergyCombos.reduce((s, c) => s + (c[key] || 0) * (c.copies || 1), 0)
 
-  const totalA  = sum('amberControl')
-  const totalE  = sum('expectedAmber')
-  const totalR  = sum('artifactControl')
-  const totalC  = sum('creatureControl')
-  const totalF  = sum('efficiency')
-  const totalU  = sum('recursion')
-  const totalD  = sum('disruption')
-  const totalP  = sum('effectivePower')
-  const totalO  = sum('other')
+  const totalA = sum('amberControl')
+  const totalE = sum('expectedAmber')
+  const totalR = sum('artifactControl')
+  const totalC = sum('creatureControl')
+  const totalF = sum('efficiency')
+  const totalU = sum('recursion')
+  const totalD = sum('disruption')
+  const totalP = sum('effectivePower')
+  const totalO = sum('other')
   const totalCp = sum('creatureProtection')
 
   // For SAS calculation, count all creatures including tokens
   const totalCreaturesForSas = cards.filter(c => c.cardType === 'Creature' || c.cardType === 'TokenCreature').length
-  const powerValue    = totalP / 10
+  const powerValue = totalP / 10
 
   const preSas = totalA + totalE + totalR + totalC + totalF + totalU + totalD + totalCp + totalO
-               + powerValue + totalCreaturesForSas * CREATURE_BONUS
+    + powerValue + totalCreaturesForSas * CREATURE_BONUS
 
-  const effBonus   = calculateEfficiencyBonus(synergyCombos, preSas)
-  const synRaw     = synergyCombos.filter(c => c.netSynergy > 0).reduce((s, c) => s + c.netSynergy * (c.copies || 1), 0)
+  const effBonus = calculateEfficiencyBonus(synergyCombos, preSas)
+  const synRaw = synergyCombos.filter(c => c.netSynergy > 0).reduce((s, c) => s + c.netSynergy * (c.copies || 1), 0)
   const antiSynRaw = synergyCombos.filter(c => c.netSynergy < 0).reduce((s, c) => s + c.netSynergy * (c.copies || 1), 0)
 
-  const synergy     = Math.round(synRaw + effBonus)
+  const synergy = Math.round(synRaw + effBonus)
   const antisynergy = Math.round(Math.abs(antiSynRaw))
-  const sas         = Math.round(preSas + effBonus)
-  const rawAerc     = sas + antisynergy - synergy
+  const sas = Math.round(preSas + effBonus)
+  const rawAerc = sas + antisynergy - synergy
 
   // ── 6. Per-house breakdown (matches DoK: does NOT include efficiency bonus) ──
   // Sum first, then round at the end (not after each addition)
@@ -1056,11 +1067,11 @@ function calculateSAS(allianceCards, expansion, tokenCard = null) {
 
   // ── 7. Card type counts ─────────────────────────────────────────────────────
   const creatureCount = cards.filter(c => c.cardType === 'Creature').length
-  const actionCount   = cards.filter(c => c.cardType === 'Action').length
+  const actionCount = cards.filter(c => c.cardType === 'Action').length
   const artifactCount = cards.filter(c => c.cardType === 'Artifact').length
-  const upgradeCount  = cards.filter(c => c.cardType === 'Upgrade').length
-  const tokenCount    = cards.filter(c => c.cardType === 'TokenCreature').length
-  const mutantCount   = cards.filter(c => (c.traits || []).includes('MUTANT')).length
+  const upgradeCount = cards.filter(c => c.cardType === 'Upgrade').length
+  const tokenCount = cards.filter(c => c.cardType === 'TokenCreature').length
+  const mutantCount = cards.filter(c => (c.traits || []).includes('MUTANT')).length
 
   // Bonus amber from pips + card amber
   const bonusAmber = cards.reduce((s, c) => s + (c.bonusAember || 0) + (c.amber || 0), 0)
